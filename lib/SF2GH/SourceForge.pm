@@ -1,3 +1,4 @@
+
 =head1 NAME
 
 SF2GH::SourceForge - SourceForge 2 GitHub SourceForge module
@@ -10,6 +11,9 @@ This module extracts information from json files exported from SourceForge.
 =cut
 
 package SF2GH::SourceForge;
+
+use strict;
+use warnings;
 
 use Data::Dumper;
 use File::Slurp;
@@ -24,15 +28,15 @@ use JSON;
 sub Tracker_Item
 {
     my ($project, $tracker_type, $id) = @_;
-    
-    my $file = "${project}-backup/${tracker_type}.json"; 
+
+    my $file = "${project}-backup/${tracker_type}.json";
     my $data = from_json(read_file($file));
 
     foreach my $ticket (@{$data->{tickets}})
     {
-        return ($ticket)   if ($ticket->{ticket_num} == $id);
+        return ($ticket) if ($ticket->{ticket_num} == $id);
     }
-    
+
     return (undef);
 }
 
@@ -43,8 +47,8 @@ sub Tracker_Item
 sub Tracker_Items
 {
     my ($project, $tracker_type) = @_;
-   
-    my @ids = (); 
+
+    my @ids  = ();
     my $file = "${project}-backup/${tracker_type}.json";
     my $data = from_json(read_file($file));
     foreach my $item (@{$data->{tickets}})
