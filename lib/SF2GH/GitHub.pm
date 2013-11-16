@@ -46,7 +46,7 @@ sub Close_Issue
     $req->content(to_json({state => 'closed'}));
     my $res = $ua->request($req);
 
-	return (Response_Handler($url, $res));
+    return (Response_Handler($url, $res));
 }
 
 =head2 Create_Issue($token, $user, $project, $json)
@@ -69,7 +69,7 @@ sub Create_Issue
     $req->content(to_json($data));
     my $res = $ua->request($req);
 
-	return (Response_Handler($url, $res));
+    return (Response_Handler($url, $res));
 }
 
 =head2 Response_Handler($url, $res)
@@ -79,9 +79,9 @@ sub Create_Issue
 
 sub Response_Handler
 {
-	my ($url, $res) = @_;
+    my ($url, $res) = @_;
 
-	if ($res->is_success)
+    if ($res->is_success)
     {
         my $data = from_json($res->content);
 
@@ -113,7 +113,7 @@ sub Update_Issue
     $req->content(to_json($data));
     my $res = $ua->request($req);
 
-	return (Response_Handler($url, $res));
+    return (Response_Handler($url, $res));
 }
 
 1;

@@ -68,7 +68,7 @@ use SF2GH::GitHub;
 use SF2GH::SourceForge;
 
 our $PROGRAM = 'sf2gh.pl';
-our $VERSION = $SF2GH::VERSION;
+our $VERSION = $SF2GH::VERSION;    ## no critic (ValuesAndExpressions)
 
 =head1 SUBROUTINES/METHODS
 
@@ -92,6 +92,12 @@ sub POD2Usage
 
     return (0);
 }
+
+=head2 Body_Attachments($attachments)
+
+Adds attachments to ticket's body
+
+=cut
 
 sub Body_Attachments
 {
@@ -186,11 +192,15 @@ $opt{verbose} and $SF2GH::VERBOSE = 1;
 
 foreach my $tracker (@{$opt{tracker}})
 {
-    if ($tracker =~ /^(bugs|feature-requests|support-requests)$/)
+    if (   $tracker eq 'bugs'
+        || $tracker eq 'feature-requests'
+        || $tracker eq 'support-requests')
     {
-        my $nb_issues = Tracker_Handle($opt{project}, $tracker, 
-			$opt{ghtoken}, $opt{ghuser}, $opt{ghrepo});
-        printf "%d '%s' issues created on GitHub.\n", $nb_issues, $tracker;
+        my $nb_issues = Tracker_Handle(
+            $opt{project}, $tracker, $opt{ghtoken},
+            $opt{ghuser},  $opt{ghrepo}
+        );
+        printf "%d ' % s' issues created on GitHub.\n", $nb_issues, $tracker;
     }
 }
 
