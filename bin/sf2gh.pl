@@ -126,6 +126,7 @@ sub Tracker_Handle
 {
     my ($project, $tracker, $ghtoken, $ghuser, $ghrepo) = @_;
 
+    my $nb_items = 0;
     my @ids = SF2GH::SourceForge::Tracker_Items($project, $tracker);
     foreach my $id (sort { $a <=> $b } @ids)
     {
@@ -135,6 +136,11 @@ sub Tracker_Handle
         if ($item)
         {
             printf "%s\n", $item->{summary};
+            if ($item->{private} eq 'true')
+            {
+                printf "[WARNING] Private Item, don't migrate to GitHub !\n";
+                next;  
+            }
             my $body = $item->{description};
             $body .= Body_Attachments($item->{attachments});
             my $gh_id = SF2GH::GitHub::Create_Issue(
@@ -159,10 +165,11 @@ sub Tracker_Handle
             }
             SF2GH::GitHub::Close_Issue($ghtoken, $ghuser, $ghrepo, $gh_id)
                 if ($item->{status} =~ /^closed/);
+            $nb_items++;
         }
     }
 
-    return (scalar @ids);
+    return ($nb_items);
 }
 
 #
