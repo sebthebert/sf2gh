@@ -14,8 +14,10 @@ package SF2GH::GitHub;
 
 use strict;
 use warnings;
+use utf8;
 
 use Data::Dumper;
+use Encode;
 use JSON;
 use LWP::UserAgent 6;
 
@@ -41,7 +43,7 @@ sub Close_Issue
         "$URL_GH_REPOS/$user/$project/issues/${id_issue}?access_token=$token";
 
     my $req = HTTP::Request->new(PATCH => $url);
-    $req->header('Content-Type' => 'application/json');
+    $req->header('Content-Type' => 'application/json;charset=utf-8');
 
     $req->content(to_json({state => 'closed'}));
     my $res = $ua->request($req);
@@ -62,11 +64,11 @@ sub Create_Issue
     my $url = "$URL_GH_REPOS/$user/$project/issues?access_token=$token";
 
     my $req = HTTP::Request->new(POST => $url);
-    $req->header('Content-Type' => 'application/json');
+    $req->header('Content-Type' => 'application/json;charset=utf-8');
 
     $data->{assignee} = $data->{assignee} || $user;
 
-    $req->content(to_json($data));
+    $req->content(encode_utf8(to_json($data)));
     my $res = $ua->request($req);
 
     return (Response_Handler($url, $res));
@@ -109,8 +111,8 @@ sub Update_Issue
 "$URL_GH_REPOS/$user/$project/issues/$id_issue/comments?access_token=$token";
 
     my $req = HTTP::Request->new(POST => $url);
-    $req->header('Content-Type' => 'application/json');
-    $req->content(to_json($data));
+    $req->header('Content-Type' => 'application/json;charset=utf-8');
+    $req->content(encode_utf8(to_json($data)));
     my $res = $ua->request($req);
 
     return (Response_Handler($url, $res));

@@ -58,6 +58,7 @@ Sets a list of ids to exclude from the migration
 
 use strict;
 use warnings;
+use utf8;
 
 use FindBin;
 use Getopt::Long;
@@ -116,7 +117,7 @@ sub Body_Attachments
     return ($str);
 }
 
-=head2 Tracker_Handle($project, $tracker, $ghtoken, $ghuser, $ghrepo)
+=head2 Tracker_Handle($project, $tracker, $ghtoken, $ghuser, $ghrepo, $exclude_list)
 
 Handles SourceForge Tracker (bugs, feature-requests, support-requests)
 
@@ -124,10 +125,15 @@ Handles SourceForge Tracker (bugs, feature-requests, support-requests)
 
 sub Tracker_Handle
 {
-    my ($project, $tracker, $ghtoken, $ghuser, $ghrepo) = @_;
+    my ($project, $tracker, $ghtoken, $ghuser, $ghrepo, $exclude_list) = @_;
 
     my $nb_items = 0;
     my @ids = SF2GH::SourceForge::Tracker_Items($project, $tracker);
+    my %excl = ();
+    if (defined $exclude_list)
+    {
+        %excl = map { $_ => 1} split ',', $exclude_list;
+    }
     foreach my $id (sort { $a <=> $b } @ids)
     {
         printf "----------------------------------------\n";
@@ -140,6 +146,11 @@ sub Tracker_Handle
             {
                 printf "[WARNING] Private Item, don't migrate to GitHub !\n";
                 next;  
+            }
+            if (defined $excl{$id})
+            {
+                printf "[WARNING] Exclude Item, don't migrate to GitHub !\n";
+                next;
             }
             my $body = $item->{description};
             $body .= Body_Attachments($item->{attachments});
@@ -180,7 +191,7 @@ my %opt = ();
 GetOptions(
     \%opt,       'ghrepo|r=s', 'ghtoken|k=s', 'ghuser|u=s',
     'help|h|?',  'man',        'project|p=s', 'tracker|t=s@',
-    'verbose|V', 'version|v',  'exclude|x'
+    'verbose|V', 'version|v',  'exclude|x=s'
 ) or POD2Usage(2);
 
 $opt{man}     and POD2Usage(2);
@@ -204,8 +215,9 @@ foreach my $tracker (@{$opt{tracker}})
         || $tracker eq 'support-requests')
     {
         my $nb_issues = Tracker_Handle(
-            $opt{project}, $tracker, $opt{ghtoken},
-            $opt{ghuser},  $opt{ghrepo}
+            $opt{project}, $tracker, 
+            $opt{ghtoken}, $opt{ghuser},  $opt{ghrepo},
+            $opt{exclude}
         );
         printf "%d ' % s' issues created on GitHub.\n", $nb_issues, $tracker;
     }
