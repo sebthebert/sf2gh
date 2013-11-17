@@ -16,7 +16,7 @@ You also need to have a GitHub Token.
 =head1 SYNOPSIS
 
 	sf2gh.pl --project <sf_project_name> 
-	   --tracker <bugs|feature-requests|support-requests>
+	   --tracker <bugs|feature-requests|patches|support-requests>
 	   --ghtoken <github_token> --ghuser <github_user> --ghrepo <github_repo>
 	   [ --exclude <list_of_ids_to_exclude> ]
 	   
@@ -38,7 +38,7 @@ Sets the Project to migrate
 
 =item B<-t>, B<--tracker>
 
-Sets the Tracker to migrate (bugs, feature-requests or support-requests)
+Sets the Tracker to migrate (bugs, feature-requests, patches or support-requests)
 
 =item B<-V>, B<--verbose>
 
@@ -212,6 +212,7 @@ foreach my $tracker (@{$opt{tracker}})
 {
     if (   $tracker eq 'bugs'
         || $tracker eq 'feature-requests'
+        || $tracker eq 'patches'
         || $tracker eq 'support-requests')
     {
         my $nb_issues = Tracker_Handle(
