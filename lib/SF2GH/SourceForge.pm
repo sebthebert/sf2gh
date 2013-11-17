@@ -30,6 +30,7 @@ sub Tracker_Item
     my ($project, $tracker_type, $id) = @_;
 
     my $file = "${project}-backup/${tracker_type}.json";
+    (-r $file)  or die "[ERROR] Unable to find tracker file $file !";
     my $data = from_json(read_file($file));
 
     foreach my $ticket (@{$data->{tickets}})
@@ -50,6 +51,7 @@ sub Tracker_Items
 
     my @ids  = ();
     my $file = "${project}-backup/${tracker_type}.json";
+    (-r $file)  or die "[ERROR] Unable to find tracker file $file !";
     my $data = from_json(read_file($file));
     foreach my $item (@{$data->{tickets}})
     {

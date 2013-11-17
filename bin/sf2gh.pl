@@ -222,6 +222,10 @@ foreach my $tracker (@{$opt{tracker}})
         );
         printf "%d ' % s' issues created on GitHub.\n", $nb_issues, $tracker;
     }
+    else
+    {
+        printf "[ERROR] Tracker $tracker is not supported !\n";    
+    }
 }
 
 =head1 AUTHOR
